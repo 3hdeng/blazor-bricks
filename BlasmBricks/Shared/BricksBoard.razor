@@ -1,0 +1,10 @@
+﻿@foreach (var brick in Bricks)
+{
+    <Brick Color="@brick.Color" />
+}
+
+@code
+{
+[Parameter]
+    public BlazorBricks.Core.BrickViewModel[] Bricks { get; set; }
+}
