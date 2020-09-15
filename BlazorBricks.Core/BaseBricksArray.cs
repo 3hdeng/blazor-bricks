@@ -10,22 +10,22 @@ namespace BlazorBricks.Core
     public abstract class BaseBricksArray : IBricksArray
     {
         #region attributes
-        protected int width = 0;
-        protected int height = 0;
-        protected string shapeString = "";
-        protected IBrick[,] shapeArray = null;
-        protected IPresenter presenter = null;
+        protected int _w = 0;
+        protected int _h = 0;
+        protected string _shapeStr = "";
+        protected IBrick[,] _brickArr = null;
+        protected IPresenter _presenter = null;
         #endregion attributes
 
         #region methods
-        public string GetStringFromShapeArray()
+        public string GetShapeString()
         {
             string ret = "";
-            for (int row = 0; row < height; row++)
+            for (int row = 0; row < _h; row++)
             {
-                for (int column = 0; column < width; column++)
+                for (int column = 0; column < _w; column++)
                 {
-                    if (shapeArray[column, row] != null)
+                    if (_brickArr[column, row] != null)
                     {
                         //ret += ((int)(shapeArray[column, row].Color)).ToString();
                         ret += "1";
@@ -39,14 +39,14 @@ namespace BlazorBricks.Core
             return ret;
         }
 
-        public virtual void InitializeArray()
+        public virtual void Init()
         {
-            shapeArray = new IBrick[width, height];
-            for (int row = 0; row < height; row++)
+            _brickArr = new IBrick[_w, _h];
+            for (int row = 0; row < _h; row++)
             {
-                for (int column = 0; column < width; column++)
+                for (int column = 0; column < _w; column++)
                 {
-                    shapeArray[column, row] = null;
+                    _brickArr[column, row] = null;
                 }
             }
         }
@@ -63,28 +63,28 @@ namespace BlazorBricks.Core
 
         public int Width
         {
-            get { return width; }
+            get { return _w; }
         }
 
         public int Height
         {
-            get { return height; }
+            get { return _h; }
         }
 
         public string ShapeString
         {
-            get { return GetStringFromShapeArray(); }
+            get { return GetShapeString(); }
         }
 
-        public IBrick[,] ShapeArray
+        public IBrick[,] BrickArr
         {
-            get { return shapeArray; }
+            get { return _brickArr; }
         }
 
         public IPresenter Presenter
         {
-            get { return presenter; }
-            set { presenter = value; }
+            get { return _presenter; }
+            set { _presenter = value; }
         }
         #endregion methods
     }

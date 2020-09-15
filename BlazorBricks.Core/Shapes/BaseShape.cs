@@ -31,9 +31,9 @@ namespace BlazorBricks.Core.Shapes
             LoadData(width, height, shapeString);
         }
 
-        public BaseShape(int width, int height, string shapeString, ShapeCode shapeCode)
+        public BaseShape(int width, int height, string shapeString, ShapeKind shapeKind)
         {
-            this.ShapeCode = shapeCode;
+            this.ShapeKind = shapeKind;
             LoadData(width, height, shapeString);
         }
 
@@ -49,10 +49,10 @@ namespace BlazorBricks.Core.Shapes
             }
             else
             {
-                this.width = width;
-                this.height = height;
-                this.shapeString = shapeString;
-                this.shapeArray = new IBrick[width, height];
+                this._w = width;
+                this._h = height;
+                this._shapeStr = shapeString;
+                this._brickArr = new IBrick[width, height];
                 int i = 0;
                 for (int row = 0; row < height; row++)
                 {
@@ -62,9 +62,9 @@ namespace BlazorBricks.Core.Shapes
                         IBrick brick = null;
                         if (nColor > 0)
                         {
-                            brick = new Brick(column, row, ShapeCode);
+                            brick = new Brick(column, row, this.ShapeKind);
                         }
-                        shapeArray[column, row] = brick;
+                        _brickArr[column, row] = brick;
                         i++;
                     }
                 }
@@ -97,12 +97,12 @@ namespace BlazorBricks.Core.Shapes
                 if (containerBoard == null)
                     throw new NullContainerBoardException();
 
-                containerBoard.RemovePieceFromCurrentPosition(this);
+                containerBoard.RemovePieceFromCurPosition(this);
 
                 test = containerBoard.TestPieceOnPosition(this, this.X - 1, this.Y);
                 if (test)
                 {
-                    containerBoard.RemovePieceFromCurrentPosition(this);
+                    containerBoard.RemovePieceFromCurPosition(this);
                     containerBoard.PutPieceOnPosition(this, this.X - 1, this.Y);
                 }
             }
@@ -117,7 +117,7 @@ namespace BlazorBricks.Core.Shapes
                 if (containerBoard == null)
                     throw new NullContainerBoardException();
 
-                containerBoard.RemovePieceFromCurrentPosition(this);
+                containerBoard.RemovePieceFromCurPosition(this);
 
                 test = containerBoard.TestPieceOnPosition(this, this.X + 1, this.Y);
                 if (test)
@@ -134,7 +134,7 @@ namespace BlazorBricks.Core.Shapes
 
             if (!anchored)
             {
-                containerBoard.RemovePieceFromCurrentPosition(this);
+                containerBoard.RemovePieceFromCurPosition(this);
 
                 //should anchor if shape can't move down from current position
                 if (!containerBoard.TestPieceOnPosition(this, this.X, this.Y + 1))
@@ -166,24 +166,25 @@ namespace BlazorBricks.Core.Shapes
                 if (containerBoard == null)
                     throw new NullContainerBoardException();
 
-                IBrick[,] newShapeArray = new IBrick[height, width];
-                IBrick[,] oldShapeArray = new IBrick[width, height];
-                for (int row = 0; row < height; row++)
+                IBrick[,] newBrickArr = new IBrick[_h, _w];
+                IBrick[,] oldBrickArr = new IBrick[_w, _h];
+                //store the original _brickArr in case rotate operation fails
+                for (int row = 0; row < _h; row++)
                 {
-                    for (int column = 0; column < width; column++)
+                    for (int column = 0; column < _w; column++)
                     {
-                        newShapeArray[height - row - 1, column] = shapeArray[column, row];
-                        oldShapeArray[column, row] = shapeArray[column, row];
+                        newBrickArr[_h - row - 1, column] = _brickArr[column, row];
+                        oldBrickArr[column, row] = _brickArr[column, row];
                     }
                 }
 
-                containerBoard.RemovePieceFromCurrentPosition(this);
+                containerBoard.RemovePieceFromCurPosition(this);
 
-                int w = width;
-                int h = height;
-                this.width = h;
-                this.height = w;
-                this.shapeArray = newShapeArray;
+                int w = _w;
+                int h = _h;
+                this._w = h;
+                this._h = w;
+                this._brickArr = newBrickArr;
 
                 if (containerBoard.TestPieceOnPosition(this, this.X, this.Y))
                 {
@@ -191,9 +192,9 @@ namespace BlazorBricks.Core.Shapes
                 }
                 else
                 {
-                    this.width = w;
-                    this.height = h;
-                    this.shapeArray = oldShapeArray;
+                    this._w = w;
+                    this._h = h;
+                    this._brickArr = oldBrickArr;
                     containerBoard.PutPieceOnPosition(this, this.X, this.Y);
                 }
             }
@@ -208,24 +209,24 @@ namespace BlazorBricks.Core.Shapes
                 if (containerBoard == null)
                     throw new NullContainerBoardException();
 
-                containerBoard.RemovePieceFromCurrentPosition(this);
+                containerBoard.RemovePieceFromCurPosition(this);
 
-                IBrick[,] newShapeArray = new IBrick[height, width];
-                IBrick[,] oldShapeArray = new IBrick[width, height];
-                for (int row = 0; row < height; row++)
+                IBrick[,] newShapeArray = new IBrick[_h, _w];
+                IBrick[,] oldShapeArray = new IBrick[_w, _h];
+                for (int row = 0; row < _h; row++)
                 {
-                    for (int column = 0; column < width; column++)
+                    for (int column = 0; column < _w; column++)
                     {
-                        newShapeArray[row, width - column - 1] = shapeArray[column, row];
-                        oldShapeArray[column, row] = shapeArray[column, row];
+                        newShapeArray[row, _w - column - 1] = _brickArr[column, row];
+                        oldShapeArray[column, row] = _brickArr[column, row];
                     }
                 }
 
-                int w = width;
-                int h = height;
-                this.width = h;
-                this.height = w;
-                this.shapeArray = newShapeArray;
+                int w = _w;
+                int h = _h;
+                this._w = h;
+                this._h = w;
+                this._brickArr = newShapeArray;
 
                 if (containerBoard.TestPieceOnPosition(this, this.X, this.Y))
                 {
@@ -233,9 +234,9 @@ namespace BlazorBricks.Core.Shapes
                 }
                 else
                 {
-                    this.width = w;
-                    this.height = h;
-                    this.shapeArray = oldShapeArray;
+                    this._w = w;
+                    this._h = h;
+                    this._brickArr = oldShapeArray;
                     containerBoard.PutPieceOnPosition(this, this.X, this.Y);
                 }
             }
@@ -255,7 +256,7 @@ namespace BlazorBricks.Core.Shapes
             set { y = value; }
         }
 
-        public ShapeCode ShapeCode { get; private set; }
+        public ShapeKind ShapeKind { get; private set; }
 
         public IBoard ContainerBoard
         {

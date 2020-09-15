@@ -9,21 +9,21 @@ namespace BlazorBricks.Core
     {
         public event EventHandler Updated;
 
-        private IView view;
-        private BricksBoard BricksBoard;
-        private TimeSpan accumulatedTimeSpan = TimeSpan.FromMilliseconds(0);
-        private CancellationTokenSource cancellationTokenSource;
+        private IView _view;
+        private BricksBoard _bricksBoard;
+        private TimeSpan _accTimeSpan = TimeSpan.FromMilliseconds(0);
+        private CancellationTokenSource _cancelTokenSource;
         private const int TICK_MS_INTERVAL = 30;
         private const int PROCESS_NEXT_MOVEMENT_MS_INTERVAL = 150;
-        private Object thisLock = new Object();
+        private Object _thisLock = new Object();
 
         public bool IsGameOver { get; set; } = true;
 
         public BricksPresenter(IView view)
         {
-            this.view = view;
-            BricksBoard = new BricksBoard(this);
-            BricksBoard.Updated += (obj, e) =>
+            this._view = view;
+            _bricksBoard = new BricksBoard(this);
+            _bricksBoard.Updated += (obj, e) =>
             {
                 Updated?.Invoke(this, e);
             };
@@ -32,8 +32,8 @@ namespace BlazorBricks.Core
         public async Task StartTickLoop()
         {
             IsGameOver = false;
-            cancellationTokenSource = new CancellationTokenSource();
-            var token = cancellationTokenSource.Token;
+            _cancelTokenSource = new CancellationTokenSource();
+            var token = _cancelTokenSource.Token;
             Task task = Task.Run(async () =>
                {
                    while (!IsGameOver)
@@ -51,14 +51,14 @@ namespace BlazorBricks.Core
             await Task.Delay(TICK_MS_INTERVAL);
             bool processMove = false;
 
-            lock (thisLock)
+            lock (_thisLock)
             {
-                processMove = BricksBoard.DownPressed;
-                accumulatedTimeSpan = accumulatedTimeSpan.Add(TimeSpan.FromMilliseconds(TICK_MS_INTERVAL));
-                if (accumulatedTimeSpan.TotalMilliseconds >= PROCESS_NEXT_MOVEMENT_MS_INTERVAL)
+                processMove = _bricksBoard.DownPressed;
+                _accTimeSpan = _accTimeSpan.Add(TimeSpan.FromMilliseconds(TICK_MS_INTERVAL));
+                if (_accTimeSpan.TotalMilliseconds >= PROCESS_NEXT_MOVEMENT_MS_INTERVAL)
                 {
                     processMove = true;
-                    accumulatedTimeSpan = TimeSpan.FromMilliseconds(0);
+                    _accTimeSpan = TimeSpan.FromMilliseconds(0);
                 }
             }
             return processMove;
@@ -66,106 +66,95 @@ namespace BlazorBricks.Core
 
         public IView View
         {
-            get { return view; }
-            set { view = value; }
+            get { return _view; }
+            set { _view = value; }
         }
 
         public void UpdateBoardView(string ArrayString, IBrick[,] brickArray, int width, int height)
         {
-            if (view == null)
+            if (_view == null)
                 throw new ArgumentNullException("View");
 
-            view.DisplayBoard(ArrayString, brickArray, width, height);
+            _view.DisplayBoard(ArrayString, brickArray, width, height);
         }
 
         public void HighlightCompletedRow(int row)
         {
-            if (view == null)
+            if (_view == null)
                 throw new ArgumentNullException("View");
         }
 
         public void UpdateScoreView(int score, int hiScore, int lines, int level, IShape next)
         {
-            if (view == null)
+            if (_view == null)
                 throw new ArgumentNullException("View");
 
-            view.DisplayScore(score, hiScore, lines, level, next);
+            _view.DisplayScore(score, hiScore, lines, level, next);
         }
 
         public bool MoveLeft()
         {
             if (IsGameOver) return false;
-            return BricksBoard.MoveLeft();
+            return _bricksBoard.MoveLeft();
         }
 
         public bool MoveRight()
         {
             if (IsGameOver) return false;
-            return BricksBoard.MoveRight();
+            return _bricksBoard.MoveRight();
         }
         
         public bool MoveDown()
         {
             if (IsGameOver) return false;
-            return BricksBoard.MoveDown();
+            return _bricksBoard.MoveDown();
         }
 
         public bool Rotate90()
         {
             if (IsGameOver) return false;
-            return BricksBoard.Rotate90();
+            return _bricksBoard.Rotate90();
         }
 
         public bool Rotate270()
         {
             if (IsGameOver) return false;
-            return BricksBoard.Rotate270();
+            return _bricksBoard.Rotate270();
         }
 
         public void InitializeBoard()
         {
-            BricksBoard.InitializeArray();
+            _bricksBoard.Init();
         }
 
         public void GameOver()
         {
-            cancellationTokenSource.Cancel();
-            view.GameOver();
+            _cancelTokenSource.Cancel();
+            _view.GameOver();
         }
 
         public void Tick(bool processMove = false)
         {
             if (processMove)
             {
-                BricksBoard.ProcessNextMove();
+                _bricksBoard.ProcessNextMove();
             }
             Updated?.Invoke(this, new EventArgs());
         }
 
         public int Width
         {
-            get { return BricksBoard.Width; }
+            get { return _bricksBoard.Width; }
         }
 
         public int Height
         {
-            get { return BricksBoard.Height; }
+            get { return _bricksBoard.Height; }
         }
 
         public int Level
         {
-            get { return BricksBoard.Level; }
+            get { return _bricksBoard.Level; }
         }
-    }
-
-    public enum ShapeCode
-    {
-        J = 1,
-        I,
-        L,
-        O,
-        S,
-        T,
-        Z
     }
 }

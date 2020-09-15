@@ -14,9 +14,9 @@ namespace BlazorBricks.Core
         private double leftMargin = 4;
         private double topMargin = 4;
         private double brickSize = 20;
-        private ShapeCode color = ShapeCode.I;
+        private ShapeKind color = ShapeKind.I;
 
-        public Brick(double x, double y, ShapeCode color)
+        public Brick(double x, double y, ShapeKind color)
         {
             this.x = x;
             this.y = y;
@@ -43,7 +43,7 @@ namespace BlazorBricks.Core
             }
         }
 
-        public ShapeCode Color
+        public ShapeKind Color
         {
             get
             {

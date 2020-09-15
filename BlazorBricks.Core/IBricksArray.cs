@@ -1,13 +1,14 @@
 ﻿using System;
 namespace BlazorBricks.Core
 {
-    interface IBricksArray
+    public interface IBricksArray
     {
-        string GetStringFromShapeArray();
-        void InitializeArray();
-        int Height { get; }
-        IBrick[,] ShapeArray { get; }
+        //string GetShapeString();
+        //void Init();
+        
+        IBrick[,] BrickArr { get; }
         string ShapeString { get; }
         int Width { get; }
+        int Height { get; }
     }
 }

@@ -14,29 +14,29 @@ namespace BlazorBricks.Core
         public event EventHandler Updated;
 
         #region attribute
-        protected ShapeCode backColor = ShapeCode.I;
-        private IShape shape = null;
+        protected ShapeKind _backColor = ShapeKind.I;
+        private IShape _shape = null;
         private int score = 0;
         private int hiScore = 0;
         private int level = 1;
         private int lines = 0;
-        private IShape next = null;
+        private IShape _next = null;
         private bool isPlaying = false;
         #endregion attribute
 
         #region constructors
         public BricksBoard(IPresenter presenter)
         {
-            this.presenter = presenter;
-            this.width = 10;
-            this.height = 20;
-            InitializeArray();
-            next = GetRandomShape();
+            this._presenter = presenter;
+            this._w = 10;
+            this._h = 20;
+            Init();
+            _next = GetRandomShape();
         }
 
         public BricksBoard(IPresenter presenter, int width, int height)
         {
-            this.presenter = presenter;
+            this._presenter = presenter;
 
             if (width < 0)
                 throw new ArgumentOutOfRangeException("width");
@@ -44,28 +44,28 @@ namespace BlazorBricks.Core
             if (height < 0)
                 throw new ArgumentOutOfRangeException("height");
 
-            this.width = width;
-            this.height = height;
-            InitializeArray();
-            next = GetRandomShape();
+            this._w = width;
+            this._h = height;
+            Init();
+            _next = GetRandomShape();
         }
 
         #endregion constructors
 
         #region methods
 
-        public override void InitializeArray()
+        public override void Init()
         {
             score = 0;
             level = 1;
             lines = 0;
-            if (shape != null)
+            if (_shape != null)
             {
-                shape.Y = 0;
+                _shape.Y = 0;
             }
-            next = GetRandomShape();
-            presenter.UpdateScoreView(score, hiScore, lines, level, next);
-            base.InitializeArray();
+            _next = GetRandomShape();
+            _presenter.UpdateScoreView(score, hiScore, lines, level, _next);
+            base.Init();
         }
 
         public bool TestPieceOnPosition(IShape shape, int x, int y)
@@ -81,16 +81,16 @@ namespace BlazorBricks.Core
                     if (row + y < 0)
                         return false;
 
-                    if (column + x >= width)
+                    if (column + x >= _w)
                         return false;
 
-                    if (row + y >= height)
+                    if (row + y >= _h)
                         return false;
 
                     //will the shape collide in the board?
                     if (
-                        shapeArray[column + x, row + y] != null &&
-                        shape.ShapeArray[column, row] != null)
+                        _brickArr[column + x, row + y] != null &&
+                        shape.BrickArr[column, row] != null)
                     {
                         return false;
                     }
@@ -99,15 +99,15 @@ namespace BlazorBricks.Core
             return true;
         }
 
-        public void RemovePieceFromCurrentPosition(IShape shape)
+        public void RemovePieceFromCurPosition(IShape shape)
         {
             for (int row = 0; row < shape.Height; row++)
             {
                 for (int column = 0; column < shape.Width; column++)
                 {
-                    if (shape.ShapeArray[column, row] != null)
+                    if (shape.BrickArr[column, row] != null)
                     {
-                        shapeArray[column + shape.X, row + shape.Y] = null;
+                        _brickArr[column + shape.X, row + shape.Y] = null;
                     }
                 }
             }
@@ -122,31 +122,31 @@ namespace BlazorBricks.Core
             {
                 for (int column = 0; column < shape.Width; column++)
                 {
-                    if (shape.ShapeArray[column, row] != null)
+                    if (shape.BrickArr[column, row] != null)
                     {
-                        shapeArray[column + x, row + y] = shape.ShapeArray[column, row];
+                        _brickArr[column + x, row + y] = shape.BrickArr[column, row];
                     }
                 }
             }
             shape.X = x;
             shape.Y = y;
 
-            if (presenter != null)
+            if (_presenter != null)
             {
-                presenter.UpdateBoardView(GetStringFromShapeArray(), shapeArray, width, height);
+                _presenter.UpdateBoardView(GetShapeString(), _brickArr, _w, _h);
             }
         }
 
         private bool RemoveCompletedRows()
         {
             bool completed = false;
-            int row = height - 1;
+            int row = _h - 1;
             while (row >= 0)
             {
                 completed = true;
-                for (int column = 0; column < width; column++)
+                for (int column = 0; column < _w; column++)
                 {
-                    if (shapeArray[column, row] == null)
+                    if (_brickArr[column, row] == null)
                     {
                         completed = false;
                         break;
@@ -157,19 +157,19 @@ namespace BlazorBricks.Core
                 {
                     //presenter.HighlightCompletedRow(row);
 
-                    IBrick[] removedBricks = new IBrick[width];
-                    for (int column = 0; column < width; column++)
+                    IBrick[] removedBricks = new IBrick[_w];
+                    for (int column = 0; column < _w; column++)
                     {
-                        removedBricks[column] = shapeArray[column, row];
+                        removedBricks[column] = _brickArr[column, row];
                     }
 
-                    shape = null;
+                    _shape = null;
                     for (int innerRow = row; innerRow > 0; innerRow--)
                     {
-                        for (int innerColumn = 0; innerColumn < width; innerColumn++)
+                        for (int innerColumn = 0; innerColumn < _w; innerColumn++)
                         {
-                            shapeArray[innerColumn, innerRow] = shapeArray[innerColumn, innerRow - 1];
-                            shapeArray[innerColumn, innerRow - 1] = null;
+                            _brickArr[innerColumn, innerRow] = _brickArr[innerColumn, innerRow - 1];
+                            _brickArr[innerColumn, innerRow - 1] = null;
                         }
                     }
 
@@ -180,7 +180,7 @@ namespace BlazorBricks.Core
                     }
                     lines++;
                     level = 1 + (lines / 10);
-                    presenter.UpdateScoreView(score, hiScore, lines, level, next);
+                    _presenter.UpdateScoreView(score, hiScore, lines, level, _next);
                 }
                 else
                 {
@@ -188,9 +188,9 @@ namespace BlazorBricks.Core
                 }
             }
 
-            if (presenter != null)
+            if (_presenter != null)
             {
-                presenter.UpdateBoardView(GetStringFromShapeArray(), shapeArray, width, height);
+                _presenter.UpdateBoardView(GetShapeString(), _brickArr, _w, _h);
             }
 
             if (completed)
@@ -202,30 +202,30 @@ namespace BlazorBricks.Core
 
         public void ProcessNextMove()
         {
-            if (shape == null)
+            if (_shape == null)
             {
                 StartRandomShape();
             }
 
             bool couldMoveDown = true;
 
-            if (!shape.Anchored)
+            if (!_shape.Anchored)
             {
-                RemovePieceFromCurrentPosition(shape);
-                couldMoveDown = shape.MoveDown();
+                RemovePieceFromCurPosition(_shape);
+                couldMoveDown = _shape.MoveDown();
             }
             else
             {
                 bool full = !StartRandomShape();
                 if (full)
                 {
-                    InitializeArray();
+                    Init();
                     GameOver();
                     return;
                 }
                 else
                 {
-                    couldMoveDown = shape.MoveDown();
+                    couldMoveDown = _shape.MoveDown();
                 }
             }
 
@@ -235,9 +235,9 @@ namespace BlazorBricks.Core
                 DownPressed = false;
             }
 
-            if (presenter != null)
+            if (_presenter != null)
             {
-                presenter.UpdateBoardView(GetStringFromShapeArray(), shapeArray, width, height);
+                _presenter.UpdateBoardView(GetShapeString(), _brickArr, _w, _h);
             }
         }
 
@@ -247,29 +247,29 @@ namespace BlazorBricks.Core
             lines = 0;
             StringBuilder sb = new StringBuilder();
             sb.Append("");
-            presenter.UpdateBoardView(this.shapeString, shapeArray, width, height);
-            presenter.GameOver();
+            _presenter.UpdateBoardView(this._shapeStr, _brickArr, _w, _h);
+            _presenter.GameOver();
         }
 
         public bool StartRandomShape()
         {
-            if (shape != null && !shape.Anchored)
+            if (_shape != null && !_shape.Anchored)
             {
-                this.RemovePieceFromCurrentPosition(shape);
+                this.RemovePieceFromCurPosition(_shape);
             }
 
-            shape = next;
+            _shape = _next;
             
-            next = GetRandomShape();
-            shape.ContainerBoard = this;
-            int x = (this.Width - shape.Width) / 2;
+            _next = GetRandomShape();
+            _shape.ContainerBoard = this;
+            int x = (this.Width - _shape.Width) / 2;
 
-            bool ret = this.TestPieceOnPosition(shape, x, 0);
+            bool ret = this.TestPieceOnPosition(_shape, x, 0);
             if (ret)
             {
                 try
                 {
-                    this.PutPieceOnPosition(shape, x, 0);
+                    this.PutPieceOnPosition(_shape, x, 0);
                 }
                 catch {}
             }
@@ -280,73 +280,73 @@ namespace BlazorBricks.Core
         {
             IShape newShape = null;
             Random randomClass = new Random();
-            int randomCode = randomClass.Next((int)ShapeCode.I, (int)ShapeCode.Z + 1);
+            int randomCode = randomClass.Next((int)ShapeKind.I, (int)ShapeKind.Z + 1);
 
             switch (randomCode)
             {
-                case (int)ShapeCode.I:
+                case (int)ShapeKind.I:
                     newShape = new StickShape();
                     break;
-                case (int)ShapeCode.J:
+                case (int)ShapeKind.J:
                     newShape = new JShape();
                     break;
-                case (int)ShapeCode.L:
+                case (int)ShapeKind.L:
                     newShape = new LShape();
                     break;
-                case (int)ShapeCode.O:
+                case (int)ShapeKind.O:
                     newShape = new OShape();
                     break;
-                case (int)ShapeCode.S:
+                case (int)ShapeKind.S:
                     newShape = new SShape();
                     break;
-                case (int)ShapeCode.T:
+                case (int)ShapeKind.T:
                     newShape = new TShape();
                     break;
-                case (int)ShapeCode.Z:
+                case (int)ShapeKind.Z:
                     newShape = new ZShape();
                     break;
             }
 
-            ((BaseShape)newShape).Presenter = presenter;
+            ((BaseShape)newShape).Presenter = _presenter;
 
-            presenter.UpdateScoreView(score, hiScore, lines, level, newShape);
+            _presenter.UpdateScoreView(score, hiScore, lines, level, newShape);
             return newShape;
         }
 
         public bool MoveLeft()
         {
-            if (shape == null)
+            if (_shape == null)
             {
                 return false;
             }
             else
             {
-                return shape.MoveLeft();
+                return _shape.MoveLeft();
             }
         }
 
         public bool MoveRight()
         {
-            if (shape == null)
+            if (_shape == null)
             {
                 return false;
             }
             else
             {
-                return shape.MoveRight();
+                return _shape.MoveRight();
             }
         }
 
         public bool MoveDown()
         {
-            if (shape == null || DownPressed)
+            if (_shape == null || DownPressed)
             {
                 return false;
             }
 
             DownPressed = true;
-            bool ret = shape.MoveDown();
-            if (shape.Anchored)
+            bool ret = _shape.MoveDown();
+            if (_shape.Anchored)
             {
                 DownPressed = false;
                 RemoveCompletedRows();
@@ -356,37 +356,37 @@ namespace BlazorBricks.Core
 
         public bool Rotate90()
         {
-            if (shape == null)
+            if (_shape == null)
             {
                 return false;
             }
             else
             {
-                return shape.Rotate90();
+                return _shape.Rotate90();
             }
         }
 
         public bool Rotate270()
         {
-            if (shape == null)
+            if (_shape == null)
             {
                 return false;
             }
             else
             {
-                return shape.Rotate270();
+                return _shape.Rotate270();
             }
         }
 
-        public bool ShapeIsAnchored() => shape.Anchored;
+        public bool ShapeIsAnchored() => _shape.Anchored;
 
         #endregion methods
 
         #region properties
-        public ShapeCode BackColor
+        public ShapeKind BackColor
         {
-            get { return backColor; }
-            set { backColor = value; }
+            get { return _backColor; }
+            set { _backColor = value; }
         }
 
         public int Score

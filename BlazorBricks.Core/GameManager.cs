@@ -55,7 +55,7 @@ namespace BlazorBricks.Core
             currentBoard.HiScore = hiScore;
             currentBoard.Lines = lines;
             currentBoard.Level = level;
-            currentBoard.Next = GetBricksArray(next.ShapeArray.GetUpperBound(1) + 1, next.ShapeArray.GetUpperBound(0) + 1, next.ShapeArray);
+            currentBoard.Next = GetBricksArray(next.BrickArr.GetUpperBound(1) + 1, next.BrickArr.GetUpperBound(0) + 1, next.BrickArr);
         }
 
         private BrickViewModel[] GetBricksArray(int rowCount, int colCount, IBrick[,] array)
