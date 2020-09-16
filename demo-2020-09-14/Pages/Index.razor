@@ -1,0 +1,91 @@
+﻿@page "/"
+@inherits IndexBase
+
+@{
+    var nextRows = boardViewModel.Next.Max(n => n.Row) + 1;
+    var nextColumns = boardViewModel.Next.Max(n => n.Col) + 1;
+}
+
+<div class="inside-page">
+    <header>
+        <img src="img/Title.png" />
+<p>nextRows=@nextRows</p>
+<p>nextColumns=@nextColumns</p>
+    </header>
+    <div class="HolyGrail-body">
+        <nav>
+            <div class="stats">
+                <StatsInfo Label="SCORE"
+                           Value="@boardViewModel.Score" />
+
+                <StatsInfo Label="HI SCORE"
+                           Value="@boardViewModel.HiScore" />
+
+                <StatsInfo Label="LINES"
+                           Value="@boardViewModel.Lines" />
+
+                <StatsInfo Label="LEVEL"
+                           Value="@boardViewModel.Level" />
+                <div class="statsLine next-container">
+                    <div>NEXT</div>
+                    <div>
+                        <div class="statsLine next-piece piece-rows-@nextRows piece-columns-@nextColumns">
+                            <BricksBoard Bricks="@boardViewModel.Next" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <main>
+
+            @if (BlazorBricks.Core.GameManager.Instance.Presenter.IsGameOver)
+            {
+                <div>
+                    <div>
+                        <button @onclick="StartTickLoop">START NEW GAME</button>
+                    </div>
+                    <br />
+                    <br />
+                    <br />
+                    <div>BLAZOR BRICKS</div>
+                    <div>©2018 MARCELO RICARDO DE OLIVEIRA</div>
+                    <br />
+                    <br />
+                    <div>
+                        MADE FOR CODE PROJECT <br />
+                        (<span><a target="_blank" href="http://www.codeproject.com">http://www.codeproject.com</a></span>)
+                    </div>
+                    <br />
+                    <div>
+                        <img src="img/Bob.png" class="bob" />
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="board">
+                    <BricksBoard Bricks="@boardViewModel.Bricks" />
+                </div>
+            }
+
+        </main>
+        <aside>
+            <div class="stats">
+                <div class="statsLine next-container">
+                    <div>NEXT</div>
+                    <div>
+                        <div class="statsLine next-piece piece-rows-@nextRows piece-columns-@nextColumns">
+                            <BricksBoard Bricks="@boardViewModel.Next" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+    <footer>
+        <img class="wa-logo" src="/img/WebAssembly.svg" />
+    </footer>
+</div>
+<div class="as-console-wrapper"><div class="as-console"></div></div>
+
+
