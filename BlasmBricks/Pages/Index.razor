@@ -1,6 +1,6 @@
 ﻿@page "/"
 @inherits IndexBase
-
+@using BlasmBricks.Shared
 @{
     var nextRows = boardViewModel.Next.Max(n => n.Row) + 1;
     var nextColumns = boardViewModel.Next.Max(n => n.Col) + 1;

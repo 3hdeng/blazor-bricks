@@ -51,9 +51,8 @@ header {
 }
 
 header,
-footer {
-    --codeproject-bg-color: #f90;
-    background: var(--codeproject-bg-color);
+footer {    
+    background:  #f90;
     /*height: 20vh;*/
     padding: 10px;
 }
@@ -145,7 +144,7 @@ app {
     width: 104.8px;
 }
 
-.colorChip {
+.brick {
     float: left;
     width: 18px;
     height: 18px;
@@ -185,28 +184,28 @@ button {
     font-family: arcadepi;
 }
 
-.shapecolor-0 {
+.shapekind-0 {
     background-color: #000000;
 }
 
-.shapecolor-I {
+.shapekind-I {
     background-color: #EC9D04;
 }
-.shapecolor-J {
+.shapekind-J {
     background-color: #A16F94;
 }
-.shapecolor-L {
+.shapekind-L {
     background-color: #E3B6A1;
 }
-.shapecolor-O {
+.shapekind-O {
     background-color: #86A2AD;
 }
-.shapecolor-S {
+.shapekind-S {
     background-color: #86A2AD;
 }
-.shapecolor-T {
+.shapekind-T {
     background-color: #02458C;
 }
-.shapecolor-Z {
+.shapekind-Z {
     background-color: #C6745F;
 }
