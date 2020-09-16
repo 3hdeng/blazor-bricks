@@ -4,38 +4,38 @@ namespace BlazorBricks.Core
 {
     public class GameManager : IView
     {
-        private static GameManager instance = null;
-        private static BricksPresenter presenter = null;
-        private static BoardViewModel currentBoard = null;
+        private static GameManager _instance = null;
+        private static BricksPresenter _presenter = null;
+        private static BoardViewModel _currentBoard = null;
 
         private GameManager()
         {
-            currentBoard = new BoardViewModel();
-            currentBoard.Bricks = new BrickViewModel[] { };
+            _currentBoard = new BoardViewModel();
+            _currentBoard.Bricks = new BrickViewModel[] { };
 
-            presenter = new BricksPresenter(this);
+            _presenter = new BricksPresenter(this);
         }
 
         public static GameManager Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance == null)
                 {
-                    instance = new GameManager();
+                    _instance = new GameManager();
                 }
-                return instance;
+                return _instance;
             }
         }
 
         public BricksPresenter Presenter
         {
-            get { return presenter; }
+            get { return _presenter; }
         }
 
         public BoardViewModel CurrentBoard
         {
-            get { return currentBoard; }
+            get { return _currentBoard; }
         }
 
         public void InitializeBoard()
@@ -46,18 +46,19 @@ namespace BlazorBricks.Core
 
         public void DisplayBoard(string arrayString, IBrick[,] brickArray, int width, int height)
         {
-            currentBoard.Bricks = GetBricksArray(height, width, brickArray);
+            _currentBoard.Bricks = GetBricksArray(height, width, brickArray);
         }
 
         public void DisplayScore(int score, int hiScore, int lines, int level, BlazorBricks.Core.Shapes.IShape next)
         {
-            currentBoard.Score = score;
-            currentBoard.HiScore = hiScore;
-            currentBoard.Lines = lines;
-            currentBoard.Level = level;
-            currentBoard.Next = GetBricksArray(next.BrickArr.GetUpperBound(1) + 1, next.BrickArr.GetUpperBound(0) + 1, next.BrickArr);
+            _currentBoard.Score = score;
+            _currentBoard.HiScore = hiScore;
+            _currentBoard.Lines = lines;
+            _currentBoard.Level = level;
+            _currentBoard.Next = GetBricksArray(next.BrickArr.GetUpperBound(1) + 1, next.BrickArr.GetUpperBound(0) + 1, next.BrickArr);
         }
 
+/// 2D IBrick arr -> 1D BrickView arr
         private BrickViewModel[] GetBricksArray(int rowCount, int colCount, IBrick[,] array)
         {
             var bricksList = new List<BrickViewModel>();
@@ -73,7 +74,7 @@ namespace BlazorBricks.Core
                         {
                             Row = row,
                             Col = col,
-                            Color = b.Color.ToString()
+                            Kind = b.Kind.ToString()
                         });
                     }
                     else
@@ -82,7 +83,7 @@ namespace BlazorBricks.Core
                         {
                             Row = row,
                             Col = col,
-                            Color = "0"
+                            Kind = "0"
                         });
                     }
                 }
@@ -92,7 +93,7 @@ namespace BlazorBricks.Core
 
         public void GameOver()
         {
-            presenter.IsGameOver = true;
+            _presenter.IsGameOver = true;
         }
     }
 
@@ -100,7 +101,7 @@ namespace BlazorBricks.Core
     {
         public int Row { get; set; }
         public int Col { get; set; }
-        public string Color { get; set; }
+        public string Kind { get; set; }
     }
 
     public class BoardViewModel

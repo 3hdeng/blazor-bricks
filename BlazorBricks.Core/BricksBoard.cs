@@ -13,15 +13,14 @@ namespace BlazorBricks.Core
     {
         public event EventHandler Updated;
 
-        #region attribute
-        protected ShapeKind _backColor = ShapeKind.I;
+        #region attribute        
         private IShape _shape = null;
-        private int score = 0;
-        private int hiScore = 0;
-        private int level = 1;
-        private int lines = 0;
+        private int _score = 0;
+        private int _hiScore = 0;
+        private int _level = 1;
+        private int _lines = 0;
         private IShape _next = null;
-        private bool isPlaying = false;
+
         #endregion attribute
 
         #region constructors
@@ -56,15 +55,15 @@ namespace BlazorBricks.Core
 
         public override void Init()
         {
-            score = 0;
-            level = 1;
-            lines = 0;
+            _score = 0;
+            _level = 1;
+            _lines = 0;
             if (_shape != null)
             {
                 _shape.Y = 0;
             }
             _next = GetRandomShape();
-            _presenter.UpdateScoreView(score, hiScore, lines, level, _next);
+            _presenter.UpdateScoreView(_score, _hiScore, _lines, _level, _next);
             base.Init();
         }
 
@@ -173,14 +172,14 @@ namespace BlazorBricks.Core
                         }
                     }
 
-                    score += 10 * level;
-                    if (score > hiScore)
+                    _score += 10 * _level;
+                    if (_score > _hiScore)
                     {
-                        hiScore = score;
+                        _hiScore = _score;
                     }
-                    lines++;
-                    level = 1 + (lines / 10);
-                    _presenter.UpdateScoreView(score, hiScore, lines, level, _next);
+                    _lines++;
+                    _level = 1 + (_lines / 10);
+                    _presenter.UpdateScoreView(_score, _hiScore, _lines, _level, _next);
                 }
                 else
                 {
@@ -243,8 +242,8 @@ namespace BlazorBricks.Core
 
         private void GameOver()
         {
-            level = 1;
-            lines = 0;
+            _level = 1;
+            _lines = 0;
             StringBuilder sb = new StringBuilder();
             sb.Append("");
             _presenter.UpdateBoardView(this._shapeStr, _brickArr, _w, _h);
@@ -309,7 +308,7 @@ namespace BlazorBricks.Core
 
             ((BaseShape)newShape).Presenter = _presenter;
 
-            _presenter.UpdateScoreView(score, hiScore, lines, level, newShape);
+            _presenter.UpdateScoreView(_score, _hiScore, _lines, _level, newShape);
             return newShape;
         }
 
@@ -378,30 +377,25 @@ namespace BlazorBricks.Core
             }
         }
 
-        public bool ShapeIsAnchored() => _shape.Anchored;
+        //public bool IsShapeAnchored() => _shape.Anchored;
 
         #endregion methods
 
         #region properties
-        public ShapeKind BackColor
-        {
-            get { return _backColor; }
-            set { _backColor = value; }
-        }
-
+        
         public int Score
         {
-            get { return score; }
+            get { return _score; }
         }
 
         private int HiScore
         {
-            get { return hiScore; }
+            get { return _hiScore; }
         }
 
         public int Level
         {
-            get { return level; }
+            get { return _level; }
         }
 
         public bool DownPressed { get; private set; } = false;

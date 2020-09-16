@@ -7,61 +7,61 @@ namespace BlazorBricks.Core
 {
     public class Brick : IBrick
     {
-        private double x = 0;
-        private double y = 0;
-        private double left = 0;
-        private double top = 0;
-        private double leftMargin = 4;
-        private double topMargin = 4;
-        private double brickSize = 20;
-        private ShapeKind color = ShapeKind.I;
+        private double _x = 0;
+        private double _y = 0;
+        private double _left = 0;
+        private double _top = 0;
+        private double _marginLeft = 4;
+        private double _marginTop = 4;
+        private int _brickSize = 20;
+        private ShapeKind _kind = ShapeKind.I;
 
         public Brick(double x, double y, ShapeKind color)
         {
-            this.x = x;
-            this.y = y;
-            this.color = color;
+            this._x = x;
+            this._y = y;
+            this._kind = color;
         }
 
         public double X
         {
-            get { return x; }
+            get { return _x; }
             set
             {
-                x = value;
-                Left = x * brickSize + leftMargin;
+                _x = value;
+                Left = _x * _brickSize + _marginLeft;
             }
         }
 
         public double Y
         {
-            get { return y; }
+            get { return _y; }
             set
             {
-                y = value;
-                Top = y * brickSize + topMargin;
+                _y = value;
+                Top = _y * _brickSize + _marginTop;
             }
         }
 
-        public ShapeKind Color
+        public ShapeKind Kind
         {
             get
             {
-                return color;
+                return _kind;
             }
             set
             {
-                color = value;
-                OnPropertyChanged("Color");
+                _kind = value;
+                OnPropertyChanged("Kind");
             }
         }
 
         public double Left
         {
-            get { return left; }
+            get { return _left; }
             set
             {
-                left = value;
+                _left = value;
                 PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("Left"));
                 OnPropertyChanged("Left");
             }
@@ -69,10 +69,10 @@ namespace BlazorBricks.Core
 
         public double Top
         {
-            get { return top; }
+            get { return _top; }
             set
             {
-                top = value;
+                _top = value;
                 PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("Top"));
                 OnPropertyChanged("Top");
             }

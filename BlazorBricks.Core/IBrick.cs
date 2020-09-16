@@ -6,6 +6,6 @@ namespace BlazorBricks.Core
     {
         double X { get; set; }
         double Y { get; set; }
-        ShapeKind Color { get; set; }
+        ShapeKind Kind { get; set; }
     }
 }

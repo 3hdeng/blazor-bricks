@@ -12,11 +12,11 @@ namespace BlazorBricks.Core.Shapes
     /// </summary>
     public abstract class BaseShape : BaseBricksArray, IShape
     {
-        protected int x = 0;
-        protected int y = 0;
+        protected int _x = 0;
+        protected int _y = 0;
 
-        protected bool anchored = false;
-        protected IBoard containerBoard = null;
+        protected bool _anchored = false;
+        protected IBoard _containerBoard = null;
 
         public BaseShape(int x, int y, int width, int height, string shapeString)
         {
@@ -26,8 +26,8 @@ namespace BlazorBricks.Core.Shapes
             if (y < 0)
                 throw new ArgumentOutOfRangeException("y");
 
-            this.x = x;
-            this.y = y;
+            this._x = x;
+            this._y = y;
             LoadData(width, height, shapeString);
         }
 
@@ -86,24 +86,24 @@ namespace BlazorBricks.Core.Shapes
 
         public void Anchor()
         {
-            anchored = true;
+            _anchored = true;
         }
 
         public bool MoveLeft()
         {
             bool test = false;
-            if (!anchored)
+            if (!_anchored)
             {
-                if (containerBoard == null)
+                if (_containerBoard == null)
                     throw new NullContainerBoardException();
 
-                containerBoard.RemovePieceFromCurPosition(this);
+                _containerBoard.RemovePieceFromCurPosition(this);
 
-                test = containerBoard.TestPieceOnPosition(this, this.X - 1, this.Y);
+                test = _containerBoard.TestPieceOnPosition(this, this.X - 1, this.Y);
                 if (test)
                 {
-                    containerBoard.RemovePieceFromCurPosition(this);
-                    containerBoard.PutPieceOnPosition(this, this.X - 1, this.Y);
+                    _containerBoard.RemovePieceFromCurPosition(this);
+                    _containerBoard.PutPieceOnPosition(this, this.X - 1, this.Y);
                 }
             }
             return test;
@@ -112,17 +112,17 @@ namespace BlazorBricks.Core.Shapes
         public bool MoveRight()
         {
             bool test = false;
-            if (!anchored)
+            if (!_anchored)
             {
-                if (containerBoard == null)
+                if (_containerBoard == null)
                     throw new NullContainerBoardException();
 
-                containerBoard.RemovePieceFromCurPosition(this);
+                _containerBoard.RemovePieceFromCurPosition(this);
 
-                test = containerBoard.TestPieceOnPosition(this, this.X + 1, this.Y);
+                test = _containerBoard.TestPieceOnPosition(this, this.X + 1, this.Y);
                 if (test)
                 {
-                    containerBoard.PutPieceOnPosition(this, this.X + 1, this.Y);
+                    _containerBoard.PutPieceOnPosition(this, this.X + 1, this.Y);
                 }
             }
             return test;
@@ -132,25 +132,25 @@ namespace BlazorBricks.Core.Shapes
         {
             bool test = false;
 
-            if (!anchored)
+            if (!_anchored)
             {
-                containerBoard.RemovePieceFromCurPosition(this);
+                _containerBoard.RemovePieceFromCurPosition(this);
 
                 //should anchor if shape can't move down from current position
-                if (!containerBoard.TestPieceOnPosition(this, this.X, this.Y + 1))
+                if (!_containerBoard.TestPieceOnPosition(this, this.X, this.Y + 1))
                 {
-                    containerBoard.PutPieceOnPosition(this, this.X, this.Y);
+                    _containerBoard.PutPieceOnPosition(this, this.X, this.Y);
                     this.Anchor();
                 }
                 else
                 {
-                    if (containerBoard == null)
+                    if (_containerBoard == null)
                         throw new NullContainerBoardException();
 
-                    test = containerBoard.TestPieceOnPosition(this, this.X, this.Y + 1);
+                    test = _containerBoard.TestPieceOnPosition(this, this.X, this.Y + 1);
                     if (test)
                     {
-                        containerBoard.PutPieceOnPosition(this, this.X, this.Y + 1);
+                        _containerBoard.PutPieceOnPosition(this, this.X, this.Y + 1);
                     }
                 }
             }
@@ -161,9 +161,9 @@ namespace BlazorBricks.Core.Shapes
         public bool Rotate90()
         {
             bool test = false;
-            if (!anchored)
+            if (!_anchored)
             {
-                if (containerBoard == null)
+                if (_containerBoard == null)
                     throw new NullContainerBoardException();
 
                 IBrick[,] newBrickArr = new IBrick[_h, _w];
@@ -178,7 +178,7 @@ namespace BlazorBricks.Core.Shapes
                     }
                 }
 
-                containerBoard.RemovePieceFromCurPosition(this);
+                _containerBoard.RemovePieceFromCurPosition(this);
 
                 int w = _w;
                 int h = _h;
@@ -186,16 +186,16 @@ namespace BlazorBricks.Core.Shapes
                 this._h = w;
                 this._brickArr = newBrickArr;
 
-                if (containerBoard.TestPieceOnPosition(this, this.X, this.Y))
+                if (_containerBoard.TestPieceOnPosition(this, this.X, this.Y))
                 {
-                    containerBoard.PutPieceOnPosition(this, this.X, this.Y);
+                    _containerBoard.PutPieceOnPosition(this, this.X, this.Y);
                 }
                 else
                 {
                     this._w = w;
                     this._h = h;
                     this._brickArr = oldBrickArr;
-                    containerBoard.PutPieceOnPosition(this, this.X, this.Y);
+                    _containerBoard.PutPieceOnPosition(this, this.X, this.Y);
                 }
             }
             return test;
@@ -204,12 +204,12 @@ namespace BlazorBricks.Core.Shapes
         public bool Rotate270()
         {
             bool test = false;
-            if (!anchored)
+            if (!_anchored)
             {
-                if (containerBoard == null)
+                if (_containerBoard == null)
                     throw new NullContainerBoardException();
 
-                containerBoard.RemovePieceFromCurPosition(this);
+                _containerBoard.RemovePieceFromCurPosition(this);
 
                 IBrick[,] newShapeArray = new IBrick[_h, _w];
                 IBrick[,] oldShapeArray = new IBrick[_w, _h];
@@ -228,16 +228,16 @@ namespace BlazorBricks.Core.Shapes
                 this._h = w;
                 this._brickArr = newShapeArray;
 
-                if (containerBoard.TestPieceOnPosition(this, this.X, this.Y))
+                if (_containerBoard.TestPieceOnPosition(this, this.X, this.Y))
                 {
-                    containerBoard.PutPieceOnPosition(this, this.X, this.Y);
+                    _containerBoard.PutPieceOnPosition(this, this.X, this.Y);
                 }
                 else
                 {
                     this._w = w;
                     this._h = h;
                     this._brickArr = oldShapeArray;
-                    containerBoard.PutPieceOnPosition(this, this.X, this.Y);
+                    _containerBoard.PutPieceOnPosition(this, this.X, this.Y);
                 }
             }
             return test;
@@ -246,27 +246,27 @@ namespace BlazorBricks.Core.Shapes
 
         public int X
         {
-            get { return x; }
-            set { x = value; }
+            get { return _x; }
+            set { _x = value; }
         }
 
         public int Y
         {
-            get { return y; }
-            set { y = value; }
+            get { return _y; }
+            set { _y = value; }
         }
 
         public ShapeKind ShapeKind { get; private set; }
 
         public IBoard ContainerBoard
         {
-            get { return containerBoard; }
-            set { containerBoard = value; }
+            get { return _containerBoard; }
+            set { _containerBoard = value; }
         }
 
         public bool Anchored
         { 
-            get {return anchored;}
+            get {return _anchored;}
         }
 
     }

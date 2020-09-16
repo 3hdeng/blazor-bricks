@@ -13,7 +13,7 @@ namespace BlazorBricks.Core
         void RemovePieceFromCurPosition(IShape shape);
         void PutPieceOnPosition(IShape shape, int x, int y);
         void ProcessNextMove();
-        ShapeKind BackColor { get; set; }
+        //ShapeKind BackColor { get; set; }
         int Width { get; }
         int Height { get; }
         int Level { get; }
